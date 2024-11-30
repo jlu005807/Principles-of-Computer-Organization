@@ -16,11 +16,7 @@
 
 **R型**： addu, sub（opcode为0）
 
-**I型**：ori,lui,lw,sw
-
-**J型**：bne
-
-
+**I型**：ori,lui,lw,sw, bne
 
 #### ori
 
