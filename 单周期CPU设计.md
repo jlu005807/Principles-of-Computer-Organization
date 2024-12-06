@@ -86,7 +86,7 @@
 
 - logisim实现，但内部未完善
 
-![image-20241128133937014](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241128133937014-1732772380448-2.png)
+![image-20241204075843244](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241204075843244-1733270326024-2.png)
 
 ## 对于控制信号
 
@@ -118,7 +118,7 @@
 
 所以对于上述指令集
 
-![image-20241128160237115](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241128160237115.png)
+![image-20241205133941654](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241205133941654-1733377183421-1.png)
 
 ### ALUcontrol
 
@@ -132,4 +132,4 @@
 
 - 详细：
 
-![image-20241128160628649](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241128160628649-1732781189679-9.png)
+![image-20241205133959879](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241205133959879-1733377201746-3.png)
