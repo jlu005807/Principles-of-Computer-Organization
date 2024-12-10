@@ -133,3 +133,175 @@
 - 详细：
 
 ![image-20241205133959879](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241205133959879-1733377201746-3.png)
+
+
+
+verilog数据通路
+
+```verilog
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company:
+// Engineer:
+//
+// Create Date: 2024/12/05 14:29:21
+// Design Name:
+// Module Name: m_CPU
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module m_CPU(
+           input wire clk,
+           input wire rst,
+           input wire[31:0] base_ram_data,
+           output wire[19:0] base_ram_addr,
+           output wire[3:0] base_ram_be_n,
+           output wire base_ram_ce_n,
+           output wire base_ram_oe_n,
+           output wire base_ram_we_n,
+           inout wire[31:0] ext_ram_data,
+           output wire[19:0] ext_ram_addr,
+           output wire[3:0] ext_ram_be_n,
+           output wire ext_ram_ce_n,
+           output wire ext_ram_oe_n,
+           output wire ext_ram_we_n
+       );
+
+//IM
+assign base_ram_be_n=4'b0000;
+assign base_ram_ce_n=1'b0;
+assign base_ram_oe_n=1'b0;
+assign base_ram_we_n=1'b1;
+
+
+
+//PC
+wire[31:0] cuurent_pc;
+wire[31:0] next_pc;
+assign cuurent_pc = (rst==1'b1)? 32'h00000000 : cuurent_pc;
+wire[31:0] PC_out;
+PC pc(
+       .pc(cuurent_pc),
+       .pc_out(PC_out),
+       .ram_addr(base_ram_addr)
+   );
+
+//Control
+wire RegDst;
+wire RegWrite;
+wire ALUSrc;
+wire PCsrc;
+wire MemRead;
+wire MemWrite;
+wire MemtoReg;
+wire [2:0] ALUop;
+
+Control ctrl(
+            .OP_code(base_ram_data[31:26]),
+            .RegDst(RegDst),
+            .RegWrite(RegWrite),
+            .ALUSrc(ALUSrc),
+            .PCsrc(PCsrc),
+            .MemRead(MemRead),
+            .MemWrite(MemWrite),
+            .MemtoReg(MemtoReg),
+            .ALUop(ALUop)
+        );
+
+//ALU Control
+wire[1:0] ALU_ctrl;
+ALU_Control aluctrl(
+                .ALU_op(ALUop),
+                .func(base_ram_data[5:0]),
+                .ALU_ctrl(ALU_ctrl)
+            );
+
+//Regfile
+wire[31:0] reg_write_data;
+wire[31:0] read_data1;
+wire[31:0] read_data2;
+wire[4:0] write_register;//rd
+
+//mux0
+assign write_register = (RegDst==1)? base_ram_data[15:11] : base_ram_data[20:16];
+
+regfile regfile(
+            .clk(clk),
+            .write_enable(RegWrite),
+            .rs(base_ram_data[25:21]),
+            .rt(base_ram_data[20:16]),
+            .rd(write_register),
+            .data_in(reg_write_data),
+            .read_data1(read_data1),
+            .read_data2(read_data2)
+        );
+
+//ex16to32
+wire[31:0] imm_data;
+
+EXT16TO32 ex16to32(
+              .imm_data(base_ram_data[15:0]),
+              .out(imm_data)
+          );
+
+
+//ALU
+wire[31:0] ALU_op1;
+wire[31:0] ALU_op2;
+wire[31:0] ALU_result;
+wire zero;
+assign ALU_op1 = read_data1;
+//mux1
+assign ALU_op2 = (ALUSrc==0)? read_data2 : (imm_data);
+
+ALU alu(
+        .ALU_OP(ALU_ctrl),
+        .OP1(ALU_op1),
+        .OP2(ALU_op2),
+        .ALU_OUT(ALU_result),
+        .zero(zero)
+    );
+
+//DM
+wire dm_read_data;
+assign ext_ram_addr = ALU_result[19:0];
+assign ext_ram_oe_n = ~MemRead;
+assign ext_ram_we_n = ~MemWrite;
+
+//处理inout
+inout_top inout_top(
+              .I_data_in(read_data2),
+              .IO_data(ext_ram_data),
+              .O_data_out(dm_read_data),
+              .control(MemRead)
+          );
+
+//mux2
+assign base_ram_data = (MemtoReg==1)? dm_read_data : ALU_result;
+
+//bne
+//pc_plus4
+wire[31:0] pc_plus4;
+assign pc_plus4 = (PC_out + 4);
+
+wire[31:0] bne_addr;
+assign bne_addr = ((imm_data << 2) + pc_plus4);
+
+//mux3
+assign next_pc = (PCsrc==1'b1 && zero!=1'b0)? bne_addr : pc_plus4;
+
+endmodule
+
+```
+
