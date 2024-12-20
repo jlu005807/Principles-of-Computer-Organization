@@ -60,7 +60,37 @@
 
 将base寄存器的值加上符号扩展后的立即数offset得到访存的虚地址，如果地址不是4的整数倍 则触发地址错例外，否则据此虚地址将rt寄存器**存入存储器**中。
 
+
+
+
+
 ![image-20241127100510974](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241127100510974.png)
+
+
+
+
+
+### 新
+
+#### addiu
+
+![image-20241218080329556](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241218080329556-1734480211973-1.png)
+
+#### sll
+
+![image-20241218080428737](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241218080428737-1734480270487-3.png)
+
+#### slt
+
+![image-20241218080554612](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241218080554612-1734480356782-7.png)
+
+#### beq
+
+![image-20241218080448795](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241218080448795-1734480290664-5.png)
+
+#### j
+
+![image-20241218080519881](D:\Internt_of_Thing\e_book\计算机组成原理\note\assets\image-20241218080519881.png)
 
 ## 设计数据通路
 
